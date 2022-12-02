@@ -27,7 +27,7 @@ pub(crate) fn parse_yaml_config(path_to_yaml: String) {
     println!("{:?}", doc);
     dbg!(&doc["masters"]["server1"][0]);
 
-
+    // assert_eq!(doc["masters"])
     //
     // // Index access for map & array
     // assert_eq!(doc["masters"][0].as_str().unwrap(), "server1");
