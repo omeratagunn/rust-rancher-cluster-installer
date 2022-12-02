@@ -1,0 +1,22 @@
+masters:
+  server1:
+    - name: ""
+    - ip: ""
+    - username: "root"
+    - password : "something"
+  server2:
+    - name: ""
+    - ip: ""
+    - username: "root"
+    - password: "something"
+nodes:
+  server1:
+    - name: ""
+    - ip: ""
+    - username: "root"
+    - password: "something"
+  server2:
+    - name: ""
+    - ip: ""
+    - username: "root"
+    - password: "something"
