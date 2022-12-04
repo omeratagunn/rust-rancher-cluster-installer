@@ -8,3 +8,7 @@ pub struct ServerConfigurationArgs{
     pub(crate)username: String,
     pub(crate)password: String
 }
+
+pub struct SshCredArgs{
+    pub(crate) cred: ServerConfigurationArgs
+}

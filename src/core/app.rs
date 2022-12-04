@@ -2,12 +2,14 @@ use std::io;
 use std::io::Write;
 use crate::app::config::parse_yaml_config;
 use colored::*;
+use crate::app::types::{ServerConfigurationArgs, SshCredArgs};
 
 #[path = "../utils/measureable.rs"] mod measure;
 #[path = "config.rs"] mod config;
 #[path = "../utils/spinner.rs"] mod spinner;
 #[path = "../utils/sanitize.rs"] mod sanitize;
-
+#[path = "../core/ssh.rs"] mod ssh;
+#[path = "../shared-types/types.rs"] mod types;
 
 
 pub(crate) fn app() {
@@ -25,16 +27,18 @@ pub(crate) fn app() {
 
         sanitize::strip_trailing_nl(&mut user_input);
 
-        parse_yaml_config(user_input);
-        // for master in config{
-        //
-        // }
-        // done the work //
+        let parsed_yaml =  parse_yaml_config(user_input);
+
         spinner_handle.done();
 
+        let spinner_handle = spinner::spinner(" Initiated...".parse().expect("spinner working"));
+        let server_vec:SshCredArgs = SshCredArgs{
+                cred: ServerConfigurationArgs {
+
+                },
+        };
+        let ssh = ssh::connect_server_via_ssh(&server_vec);
+
+        spinner_handle.done();
 }
 
-fn my_convert<T, U>(v: Vec<U>) -> Vec<T>
-        where T: From<U> {
-        v.into_iter().map(T::from).collect()
-}

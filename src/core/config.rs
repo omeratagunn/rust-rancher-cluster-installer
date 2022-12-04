@@ -7,7 +7,6 @@ use std::string::String;
 use std::path::Path;
 use std::process::exit;
 
-use crate::app::config::types::{ServerConfigurationArgs, YamlInput};
 
 #[path = "../shared-types/types.rs"] mod types;
 
@@ -18,13 +17,13 @@ pub(crate) fn parse_yaml_config(path_to_yaml: String) -> Vec<Yaml> {
         println!("this is not a file");
         exit(1);
     }
+
     let mut file = File::open(&path_to_yaml).expect("file could not be opened");
 
     let mut contents = String::new();
     let _content = file.read_to_string(&mut contents);
     let docs: Vec<Yaml> = YamlLoader::load_from_str(&mut contents).unwrap();
-    
+
     return docs;
 
 }
-
