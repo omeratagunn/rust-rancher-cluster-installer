@@ -34,7 +34,10 @@ pub(crate) fn app() {
         let spinner_handle = spinner::spinner(" Initiated...".parse().expect("spinner working"));
         let server_vec:SshCredArgs = SshCredArgs{
                 cred: ServerConfigurationArgs {
-
+                        ip: "".to_string(),
+                        name: "".to_string(),
+                        username: "".to_string(),
+                        password: "".to_string()
                 },
         };
         let ssh = ssh::connect_server_via_ssh(&server_vec);
