@@ -1,0 +1,17 @@
+###########################################################################
+# libssh2 installation details
+###########################################################################
+
+prefix=/Users/omeratagun/Projects/Rust/RancherInstaller/target/release/build/libssh2-sys-e0f82c91fb14ac66/out
+exec_prefix=
+libdir=/Users/omeratagun/Projects/Rust/RancherInstaller/target/release/build/libssh2-sys-e0f82c91fb14ac66/out/lib
+includedir=/Users/omeratagun/Projects/Rust/RancherInstaller/target/release/build/libssh2-sys-e0f82c91fb14ac66/out/include
+
+Name: libssh2
+URL: https://www.libssh2.org/
+Description: Library for SSH-based communication
+Version: 1.9.0_DEV
+Requires.private: 
+Libs: -L${libdir} -lssh2 
+Libs.private: 
+Cflags: -I${includedir}

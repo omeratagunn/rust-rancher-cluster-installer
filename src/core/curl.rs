@@ -1,8 +1,10 @@
 use std::io::prelude::*;
 use colored::Colorize;
 use ssh2::{Channel, Session};
+use crate::app::spinner;
 
 pub(crate) fn check_curl(channel: &Session){
+    let spinner_handle = spinner::spinner(" Installing curl...".parse().expect("spinner working"));
     let mut curl = channel.channel_session().expect("session");
     curl.exec("curl --version").expect("curl installation");
     let mut s = String::new();
@@ -10,17 +12,15 @@ pub(crate) fn check_curl(channel: &Session){
     curl.read_to_string(&mut s).expect("Command to run");
 
     if s.len() == 0 {
-        println!("{}","\nCurl is not installed.. ".red());
 
         curl.wait_close().ok();
-        println!("{}","\nInstalling curl.. ".red());
         install_curl(&channel);
         return;
     }
 
     curl.read_to_string(&mut s).expect("Command to run");
-    println!("{}","\nCurl installed, moving next.. ".green());
     curl.wait_close().ok();
+    spinner_handle.done();
 }
 
 pub(crate) fn install_curl(session: &Session){
