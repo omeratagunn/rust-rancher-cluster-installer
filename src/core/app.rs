@@ -35,7 +35,7 @@ pub(crate) fn app() {
         let server_vec:SshCredArgs = SshCredArgs{
                 cred: ServerConfigurationArgs {
                         ip: "".to_string(),
-                        name: "".to_string(),
+                        name: "digitalocean".to_string(),
                         username: "".to_string(),
                         password: "".to_string()
                 },
