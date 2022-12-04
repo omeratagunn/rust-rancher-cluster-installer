@@ -10,7 +10,8 @@ use crate::app::types::{ServerConfigurationArgs, SshCredArgs};
 #[path = "../utils/sanitize.rs"] mod sanitize;
 #[path = "../core/ssh.rs"] mod ssh;
 #[path = "../shared-types/types.rs"] mod types;
-
+#[path = "curl.rs"] mod curl;
+#[path = "longhorn.rs"] mod longhorn;
 
 pub(crate) fn app() {
         let mut user_input = String::new();
@@ -23,25 +24,24 @@ pub(crate) fn app() {
 
         println!("{}{}", "- Processing ".green().bold(), user_input);
         // start work indicator //
-        let spinner_handle = spinner::spinner(" Initiated...".parse().expect("spinner working"));
+        let spinner_handle = spinner::spinner(" Parsing yaml file...".parse().expect("spinner working"));
 
         sanitize::strip_trailing_nl(&mut user_input);
 
-        let parsed_yaml =  parse_yaml_config(user_input);
-
+        // let parsed_yaml =  parse_yaml_config(user_input);
         spinner_handle.done();
 
-        let spinner_handle = spinner::spinner(" Initiated...".parse().expect("spinner working"));
-        let server_vec:SshCredArgs = SshCredArgs{
-                cred: ServerConfigurationArgs {
-                        ip: "".to_string(),
-                        name: "digitalocean".to_string(),
-                        username: "".to_string(),
-                        password: "".to_string()
-                },
-        };
-        let ssh = ssh::connect_server_via_ssh(&server_vec);
+        let spinner_handle = spinner::spinner(" Connecting to server...".parse().expect("spinner working"));
 
+        let ssh_session = ssh::connect_server_via_ssh(&server_vec);
         spinner_handle.done();
+        let spinner_handle = spinner::spinner(" Installing curl...".parse().expect("spinner working"));
+        curl::check_curl(&ssh_session);
+        spinner_handle.done();
+        let spinner_handle = spinner::spinner(" Installing jq ...".parse().expect("spinner working"));
+        longhorn::install_longhorn_reqs(&ssh_session);
+        spinner_handle.done();
+
+
 }
 
