@@ -1,9 +1,9 @@
 masters:
   server1:
-    - name: ""
-    - ip: ""
+    - name: "myserver"
+    - ip: "192.144.321.22"
     - username: "root"
-    - password : "something"
+    - password : "root"
   server2:
     - name: ""
     - ip: ""

@@ -1,17 +1,19 @@
-#![allow(unused)]
 extern crate yaml_rust;
-use yaml_rust::{YamlLoader, YamlEmitter};
+
+use yaml_rust::{YamlLoader, Yaml};
 use std::fs::File;
 use std::io::Read;
-
+use std::string::String;
 use std::path::Path;
 use std::process::exit;
 
-pub(crate) fn parse_yaml_config(path_to_yaml: String) {
-    dbg!(&path_to_yaml);
+use crate::app::config::types::{ServerConfigurationArgs, YamlInput};
+
+#[path = "../shared-types/types.rs"] mod types;
+
+pub(crate) fn parse_yaml_config(path_to_yaml: String) -> Vec<Yaml> {
     let file_path = Path::new(&path_to_yaml);
 
-    println!("{path_to_yaml}");
     if  !file_path.is_file() {
         println!("this is not a file");
         exit(1);
@@ -19,29 +21,26 @@ pub(crate) fn parse_yaml_config(path_to_yaml: String) {
     let mut file = File::open(&path_to_yaml).expect("file could not be opened");
 
     let mut contents = String::new();
-    let content = file.read_to_string(&mut contents);
-    println!("{:?}", content);
-    let docs = YamlLoader::load_from_str(&mut contents).unwrap();
-    // Multi document support, doc is a yaml::Yaml
-    let doc = &docs[0];
-    println!("{:?}", doc);
-    dbg!(&doc["masters"]["server1"][0]);
+    let _content = file.read_to_string(&mut contents);
+    let docs: Vec<Yaml> = YamlLoader::load_from_str(&mut contents).unwrap();
+    // let fuckever = &docs[0]["masters"];
+    // let mut somevec: Vec<ServerConfigurationArgs> = Vec::new();
+    //
+    // let som = fuckever["server1"][0]["name"].into_string().expect("move fuckever");
+    // dbg!({ "" }, &fuckever["server1"][0]["name"]);
+    // let server_config: ServerConfigurationArgs = ServerConfigurationArgs{
+    //     name: som,
+    //     ip: "fuck".parse().unwrap(),
+    //     username: "fuck".parse().unwrap(),
+    //     password: "fuck".parse().unwrap(),
+    // };
+    // somevec.push(server_config);
+    // let yaml_input:YamlInput = YamlInput{
+    //     masters: somevec,
+    //     nodes: vec![],
+    // };
+    // dbg!("{}", &yaml_input.masters[0].name);
+    return docs;
 
-    // assert_eq!(doc["masters"])
-    //
-    // // Index access for map & array
-    // assert_eq!(doc["masters"][0].as_str().unwrap(), "server1");
-    //
-    // // Chained key/array access is checked and won't panic,
-    // // return BadValue if they are not exist.
-    // assert!(doc["INVALID_KEY"][100].is_badvalue());
-    //
-    // // Dump the YAML object
-    // let mut out_str = String::new();
-    // {
-    //     let mut emitter = YamlEmitter::new(&mut out_str);
-    //     emitter.dump(doc).unwrap(); // dump the YAML object to a String
-    //
-    // }
-    // println!("{}", out_str);
 }
+

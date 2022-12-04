@@ -20,9 +20,21 @@ pub(crate) fn app() {
             .expect("Failed to read line");
 
         println!("{}{}", "- Processing ".green().bold(), user_input);
-        let spinner_handle = spinner::spinner(" Initiated...".parse().unwrap());
+        // start work indicator //
+        let spinner_handle = spinner::spinner(" Initiated...".parse().expect("spinner working"));
+
         sanitize::strip_trailing_nl(&mut user_input);
 
-        parse_yaml_config(user_input)
+        parse_yaml_config(user_input);
+        // for master in config{
+        //
+        // }
+        // done the work //
+        spinner_handle.done();
 
+}
+
+fn my_convert<T, U>(v: Vec<U>) -> Vec<T>
+        where T: From<U> {
+        v.into_iter().map(T::from).collect()
 }
