@@ -26,11 +26,11 @@ pub(crate) fn get_installation() -> Installation {
                 command: "apt update && apt install mount nfs-common -y || true && apt install -y open-iscsi".to_string(),
                 fallback_command: "apt update && apt install mount nfs-common -y || true && apt install -y open-iscsi".to_string(),
             },
-            LinuxInstructions {
-                name: "rancher".to_string(),
-                command: "curl -sfL https://get.k3s.io | sh -s - server --cluster-init".to_string(),
-                fallback_command: "".to_string(),
-            },
+            // LinuxInstructions {
+            //     name: "rancher".to_string(),
+            //     command: "curl -sfL https://get.k3s.io | sh -s - server --cluster-init".to_string(),
+            //     fallback_command: "".to_string(),
+            // },
             LinuxInstructions {
                 name: "Longhorn check".to_string(),
                 command: "curl -sSfL https://raw.githubusercontent.com/longhorn/longhorn/master/scripts/environment_check.sh | bash".to_string(),

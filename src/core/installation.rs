@@ -5,7 +5,7 @@ use ssh2::{Session};
 use crate::app::installation::LinuxInstructions;
 use crate::app::spinner;
 
-pub(crate) fn install(instructions: &LinuxInstructions, session: &Session){
+pub(crate) fn install_common(instructions: &LinuxInstructions, session: &Session){
     let mut info_string = String::new();
     info_string.push_str("Installing ");
     info_string.push_str(&*instructions.name);
@@ -109,6 +109,30 @@ pub(crate) fn get_k3s_token_and_save(session: &Session){
         _ => (),
     }
 
+    spinner_handle.done();
+
+}
+
+pub(crate) fn install_rancher(session: &Session, command_to_execute: String, rancher_type: &str){
+    let mut info_string = String::new();
+    info_string.push_str(&*rancher_type);
+
+
+    let spinner_handle = spinner::spinner(info_string.parse().expect("spinner working"));
+
+    let mut command = session.channel_session().expect("session");
+
+    command.exec(&*command_to_execute).expect(&format!("{} INSTALLATION", rancher_type));
+    let mut s = String::new();
+
+    command.read_to_string(&mut s).expect("Command to run");
+
+    if command.exit_status().expect("exit status") > 0 {
+        println!("\n Exited with status code: {}", command.exit_status().unwrap());
+    }
+
+    command.read_to_string(&mut s).expect("Command to run");
+    command.wait_close().ok();
     spinner_handle.done();
 
 }
