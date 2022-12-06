@@ -1,6 +1,6 @@
 use ssh2::{Session};
 use std::net::TcpStream;
-use crate::app::config::ServerConf;
+use crate::app::yaml::ServerConf;
 
 
 pub(crate) fn connect_server_via_ssh(args: &ServerConf) -> Session {

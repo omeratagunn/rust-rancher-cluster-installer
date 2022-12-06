@@ -17,7 +17,7 @@ pub(crate) fn install(instructions: LinuxInstructions, session: &Session){
 
     command.read_to_string(&mut s).expect("Command to run");
 
-
+    // if return length after the command is zero, run fallback command. in this case its a installation scenario //
     if s.len() == 0{
 
         command.wait_close().ok();
