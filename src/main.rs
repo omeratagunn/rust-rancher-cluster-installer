@@ -1,8 +1,7 @@
 #[path = "core/app.rs"] mod app;
 
-use std::{env, process};
+use std::{env};
 use colored::Colorize;
-use openssl_sys::exit;
 use crate::app::app;
 
 
@@ -23,9 +22,9 @@ fn main(){
       },
       // one command and one argument passed
       3 => {
-         let mut filepath = &args[2];
+         let  filepath = &args[2];
          println!("Given file path {}", filepath);
-         let mut path = String::from(filepath);
+         let  path = String::from(filepath);
          app(path)
       },
       // all the other cases

@@ -1,8 +1,5 @@
 
-use std::collections::BTreeMap;
 use std::fs::File;
-use std::io::Read;
-use std::iter::Enumerate;
 use std::string::String;
 use std::path::Path;
 use std::process::exit;
@@ -31,7 +28,7 @@ pub(crate) fn parse_yaml_config(path_to_yaml: String) -> Config {
         exit(1);
     }
 
-    let mut file = File::open(&path_to_yaml).expect("file could not be opened");
+    let  file = File::open(&path_to_yaml).expect("file could not be opened");
 
     let deserialized_map:Config = serde_yaml::from_reader(file).expect("reader");
     return deserialized_map;

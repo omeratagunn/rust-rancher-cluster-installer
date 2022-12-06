@@ -1,7 +1,5 @@
-use ssh2::{Channel, Session};
-use std::io::prelude::*;
+use ssh2::{Session};
 use std::net::TcpStream;
-use colored::Colorize;
 use crate::app::config::ServerConf;
 
 

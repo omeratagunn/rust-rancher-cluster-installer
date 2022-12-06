@@ -1,6 +1,5 @@
 use std::io::prelude::*;
-use colored::Colorize;
-use ssh2::{Channel, Session};
+use ssh2::{Session};
 use crate::app::installation::LinuxInstructions;
 use crate::app::spinner;
 
