@@ -13,12 +13,13 @@ pub(crate) fn install(instructions: LinuxInstructions, session: &Session){
 
     let mut command = session.channel_session().expect("session");
 
-    command.exec(&*instructions.command).expect(&format!("{} installation", instructions.name));
+    command.exec(&*instructions.command).expect(&format!("{} INSTALLATION", instructions.name));
     let mut s = String::new();
 
     command.read_to_string(&mut s).expect("Command to run");
 
-    if s.len() == 0 {
+
+    if s.len() == 0{
 
         command.wait_close().ok();
 
@@ -31,6 +32,10 @@ pub(crate) fn install(instructions: LinuxInstructions, session: &Session){
         command.wait_close().ok();
         spinner_handle.done();
         return;
+    }
+
+    if command.exit_status().expect("exit status") > 0 {
+        println!("\n Exited with status code: {}", command.exit_status().unwrap());
     }
 
     command.read_to_string(&mut s).expect("Command to run");

@@ -1,22 +1,18 @@
 masters:
-  server1:
     - name: "myserver"
-    - ip: "192.144.321.22"
-    - username: "root"
-    - password : "root"
-  server2:
+      ip: "192.144.321.22"
+      username: "root"
+      password : "root"
     - name: ""
-    - ip: ""
-    - username: "root"
-    - password: "something"
+      ip: ""
+      username: "root"
+      password: "something"
 nodes:
-  server1:
-    - name: ""
-    - ip: ""
-    - username: "root"
-    - password: "something"
-  server2:
-    - name: ""
-    - ip: ""
-    - username: "root"
-    - password: "something"
+  - name: "myserver"
+    ip: "192.144.321.22"
+    username: "root"
+    password : "root"
+  - name: ""
+    ip: ""
+    username: "root"
+    password: "something"
