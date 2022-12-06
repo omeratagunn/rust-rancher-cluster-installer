@@ -11,18 +11,17 @@ use serde_yaml::{self};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub(crate) struct Config{
-    masters: Vec<ServerConf>,
-    nodes: Vec<ServerConf>,
+    pub(crate) masters: Vec<ServerConf>,
+    pub(crate) nodes: Vec<ServerConf>,
 }
 #[derive(Debug, Serialize, Deserialize)]
-struct ServerConf {
-    name: String,
-    ip: String,
-    username: String,
-    password: String
+pub(crate) struct ServerConf {
+    pub(crate) name: String,
+    pub(crate) ip: String,
+    pub(crate) username: String,
+    pub(crate) password: String
 }
 
-#[path = "../shared-types/types.rs"] mod types;
 
 pub(crate) fn parse_yaml_config(path_to_yaml: String) -> Config {
     let file_path = Path::new(&path_to_yaml);
