@@ -3,6 +3,7 @@ use std::fs::File;
 use std::string::String;
 use std::path::Path;
 use std::process::exit;
+use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
 
@@ -20,11 +21,11 @@ pub(crate) struct ServerConf {
 }
 
 
-pub(crate) fn parse_yaml_config(path_to_yaml: String) -> Config {
+pub(crate) fn parse_yaml_config(path_to_yaml: &String) -> Config {
     let file_path = Path::new(&path_to_yaml);
 
     if  !file_path.is_file() {
-        println!("this is not a file");
+        println!("{}", "\nThis is not a file".red().bold());
         exit(1);
     }
 

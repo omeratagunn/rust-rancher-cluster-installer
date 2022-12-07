@@ -1,7 +1,7 @@
 use colored::Colorize;
 use crate::app::yaml::parse_yaml_config;
 
-#[path = "../utils/measureable.rs"]
+#[path = "../utils/measurable.rs"]
 mod measure;
 #[path = "yaml.rs"]
 mod yaml;
@@ -19,7 +19,7 @@ mod installation;
 mod config;
 
 
-pub(crate) fn app( path: String, k3s_version: String) {
+pub(crate) fn app( path: &String, k3s_version: &String) {
     let spinner_handle = spinner::spinner("Parsing yaml file...".parse().expect("spinner working"));
 
     let parsed_yaml = parse_yaml_config(path);
