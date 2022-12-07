@@ -1,11 +1,11 @@
 masters:
   - name: "main"
-    ip: "192.144.321.22"
+    ip: "127.0.0.1:22"
     username: "root"
     password : "root"
 nodes:
   - name: "node1"
-    ip: "192.144.321.22"
+    ip: "127.0.0.2:22"
     username: "root"
     password : "root"
   - name: "node2"
