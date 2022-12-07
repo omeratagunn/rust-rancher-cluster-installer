@@ -54,7 +54,6 @@ fn build_masters(masters: &Config, k3s_version: &String){
             install::get_kube_config_into_local(ip, &ssh_session);
             install::get_k3s_token_and_save( &ssh_session);
         }
-
     }
 }
 
