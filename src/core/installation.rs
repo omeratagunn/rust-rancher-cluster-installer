@@ -5,6 +5,10 @@ use ssh2::{Session};
 use crate::app::installation::LinuxInstructions;
 use crate::app::spinner;
 
+pub const fn folder_path() -> &'static str {
+    "./kubeconfig"
+}
+
 pub(crate) fn install_common(instructions: &LinuxInstructions, session: &Session){
     let mut info_string = String::new();
     info_string.push_str("Installing ");
@@ -55,10 +59,10 @@ pub(crate) fn get_kube_config_into_local(ip: &String, session: &Session){
     let mut s = String::new();
 
     command.read_to_string(&mut s).expect("Command to run");
-    let folder:bool = Path::new("./kubeconfig").is_dir();
+    let folder:bool = Path::new(&folder_path()).is_dir();
 
     if !folder {
-        fs::create_dir("./kubeconfig").expect("creating folder");
+        fs::create_dir(&folder_path()).expect("creating folder");
     }
     let replaced_config = s.replace("https://127.0.0.1:6443", &*format!("{}{}", "https://", ip.replace("22", "6443")));
 

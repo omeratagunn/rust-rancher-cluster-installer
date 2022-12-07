@@ -4,35 +4,35 @@ use std::{env};
 use colored::Colorize;
 use crate::app::app;
 
+
 fn main(){
    let args: Vec<String> = env::args().collect();
-   match args.len() {
-      1 => {
-         println!("Try passing some arguments!");
-      },
-      // one argument passed
-      2 => {
-         match args[1].parse() {
-            Ok(42) => println!("This is the answer!"),
-            _ => help(),
-         }
-      },
-      // one command and one argument passed
-      3 => {
-         let  filepath = &args[2];
-         println!("Given file path {}", filepath);
-         let  path = String::from(filepath);
-         app(path)
-      },
-      // all the other cases
-      _ => {
-         // show a help message
-         help();
-      }
+   if args.len() <= 1 {
+      help();
+      return;
    }
+   match_args(args);
 
 }
 
+fn match_args(args: Vec<String>){
+   let mut path = String::new();
+   let mut k3s_version = String::new();
+   for (i, arg) in args.iter().enumerate(){
+      if arg == "config" && args[i + 1].contains("/")  {
+         path.push_str((&args[i + 1]));
+      }
+      if arg == "k3s_version" && args[i + 1].contains("v")  {
+         k3s_version.push_str((&args[i + 1]));
+      }
+   }
+   if k3s_version.len() == 0 {
+      k3s_version.push_str("v1.23.13+k3s1")
+   }
+
+   app(path, k3s_version);
+}
+
 fn help() {
-   println!("{}", "Usage: ./rancherinstall -- config <absoluteyamlfilepath>".red().bold())
+   println!("{}", "- Example usage: ./rancherinstall -- yaml <absoluteyamlfilepath>\n- Optionally you can pass k3s version -- k3s_version v1.23.13+k3s1".red().bold())
 }

@@ -1,4 +1,4 @@
-
+use colored::Colorize;
 use crate::app::yaml::parse_yaml_config;
 
 #[path = "../utils/measureable.rs"]
@@ -19,14 +19,14 @@ mod installation;
 mod config;
 
 
-pub(crate) fn app( path: String) {
+pub(crate) fn app( path: String, k3s_version: String) {
     let spinner_handle = spinner::spinner("Parsing yaml file...".parse().expect("spinner working"));
 
     let parsed_yaml = parse_yaml_config(path);
     spinner_handle.done();
 
     for (master_node_index,masters) in parsed_yaml.masters.iter().enumerate() {
-        let spinner_handle = spinner::spinner(format!("{}{}{}{}", "Connecting to server: ", masters.ip, " | Name: ", masters.name).parse().expect("spinner working"));
+        let spinner_handle = spinner::spinner(format!("{}{}{}{}", "Connecting to server: ".blue().bold(), masters.ip, " | Name: ", masters.name).parse().expect("spinner working"));
         let ssh_session = ssh::connect_server_via_ssh(&masters);
         spinner_handle.done();
         let ip = &masters.ip;
