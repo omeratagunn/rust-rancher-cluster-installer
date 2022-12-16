@@ -117,7 +117,7 @@ pub(crate) fn get_k3s_token_and_save(session: &Session){
 
 }
 
-pub(crate) fn install_rancher(session: &Session, command_to_execute: String, rancher_type: &str){
+pub(crate) fn install_k3s(session: &Session, command_to_execute: String, rancher_type: &str){
     let mut info_string = String::new();
     info_string.push_str(&*rancher_type);
 

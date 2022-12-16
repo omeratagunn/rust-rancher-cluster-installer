@@ -10,8 +10,11 @@ opt-level = 0
 [profile.release]
 opt-level = 3
 
-[dependencies]
+[[bin]]
+name = "rancherinstaller"
+path = "src/main.rs"
 
+[dependencies]
 colored = "2"
 terminal-spinners = "0.3.2"
 ssh2 = "0.9"

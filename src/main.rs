@@ -1,9 +1,10 @@
 #[path = "core/app.rs"] mod app;
 #[path = "utils/measurable.rs"] mod measure;
+
+
 use std::{env};
 use colored::Colorize;
 use crate::app::app;
-
 
 fn main(){
    let start = measure::start_time();
