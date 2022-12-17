@@ -1,4 +1,4 @@
-use crate::app::installation::LinuxInstructions;
+use rancherinstaller::types::LinuxInstructions;
 use ssh2::Session;
 use std::fs::{self, File};
 use std::io::prelude::*;

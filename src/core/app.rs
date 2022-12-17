@@ -6,9 +6,6 @@ use std::fs;
 mod config;
 #[path = "installation.rs"]
 mod install;
-#[path = "../config/config.rs"]
-mod installation;
-
 #[path = "../core/ssh.rs"]
 mod ssh;
 #[path = "yaml.rs"]
@@ -42,7 +39,7 @@ pub(crate) fn build_masters(masters: &Config, k3s_version: &String) {
         spinner_handle.done();
         let ip = &masters.ip;
 
-        for (_index, instructions) in installation::get_installation()
+        for (_index, instructions) in rancherinstaller::config::get_installation()
             .linux_amd64
             .iter()
             .enumerate()
@@ -88,7 +85,7 @@ fn build_nodes(nodes: &Config, k3s_version: &String) {
                 .unwrap(),
             "Rancher worker",
         );
-        for (_i, instructions) in installation::get_installation()
+        for (_i, instructions) in rancherinstaller::config::get_installation()
             .linux_amd64
             .iter()
             .enumerate()
