@@ -6,7 +6,7 @@ use colored::Colorize;
 use std::env;
 
 fn main() {
-    let start = rancherinstaller::start_time();
+    let start = rancherinstaller::utils::start_time();
     let args: Vec<String> = env::args().collect();
     if args.len() <= 1 {
         help();
@@ -16,7 +16,7 @@ fn main() {
     app(&parsed_args[0], &parsed_args[1]);
     println!(
         "Time taken for installation: {} seconds",
-        rancherinstaller::finish_time(start)
+        rancherinstaller::utils::finish_time(start)
     )
 }
 
@@ -39,5 +39,5 @@ fn match_args(args: Vec<String>) -> [String; 2] {
 }
 
 fn help() {
-    println!("{}", "- Example usage: ./rancherinstall -- yaml <absoluteyamlfilepath>\n- Optionally you can pass k3s version -- k3s_version v1.23.13+k3s1".red().bold())
+    println!("{}", "- Example usage: ./rancherinstall -- config <absoluteyamlfilepath>\n- Optionally you can pass k3s version -- k3s_version v1.23.13+k3s1".red().bold())
 }

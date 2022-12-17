@@ -9,15 +9,14 @@ mod install;
 #[path = "../config/config.rs"]
 mod installation;
 
-#[path = "../utils/spinner.rs"]
-mod spinner;
 #[path = "../core/ssh.rs"]
 mod ssh;
 #[path = "yaml.rs"]
 mod yaml;
 
 pub(crate) fn app(path: &String, k3s_version: &String) {
-    let spinner_handle = spinner::spinner("Parsing yaml file...".parse().expect("spinner working"));
+    let spinner_handle =
+        rancherinstaller::utils::spinner("Parsing yaml file...".parse().expect("spinner working"));
 
     let parsed_yaml = parse_yaml_config(path);
     spinner_handle.done();
@@ -28,7 +27,7 @@ pub(crate) fn app(path: &String, k3s_version: &String) {
 
 pub(crate) fn build_masters(masters: &Config, k3s_version: &String) {
     for (master_node_index, masters) in masters.masters.iter().enumerate() {
-        let spinner_handle = spinner::spinner(
+        let spinner_handle = rancherinstaller::utils::spinner(
             format!(
                 "{}{}{}{}",
                 "Connecting to master server: ".blue().bold(),
@@ -54,7 +53,7 @@ pub(crate) fn build_masters(masters: &Config, k3s_version: &String) {
         if master_node_index == 0 {
             install::install_k3s(
                 &ssh_session,
-                rancherinstaller::build_k3s_master_command(&k3s_version)
+                rancherinstaller::utils::build_k3s_master_command(&k3s_version)
                     .parse()
                     .unwrap(),
                 "Rancher master",
@@ -67,7 +66,7 @@ pub(crate) fn build_masters(masters: &Config, k3s_version: &String) {
 
 fn build_nodes(nodes: &Config, k3s_version: &String) {
     for (_index, nodes) in nodes.nodes.iter().enumerate() {
-        let spinner_handle = spinner::spinner(
+        let spinner_handle = rancherinstaller::utils::spinner(
             format!(
                 "{}{}{}{}",
                 "Connecting to node server: ".blue().bold(),
@@ -84,7 +83,7 @@ fn build_nodes(nodes: &Config, k3s_version: &String) {
             fs::read_to_string("kubeconfig/token").expect("should have been read the file");
         install::install_k3s(
             &ssh_session,
-            rancherinstaller::build_k3s_node_command(&k3s_version, &nodes.ip, token)
+            rancherinstaller::utils::build_k3s_node_command(&k3s_version, &nodes.ip, token)
                 .parse()
                 .unwrap(),
             "Rancher worker",
