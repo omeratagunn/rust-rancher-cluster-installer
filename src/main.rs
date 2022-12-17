@@ -3,6 +3,7 @@ mod app;
 
 use crate::app::app;
 use colored::Colorize;
+
 use std::env;
 
 fn main() {
@@ -13,6 +14,7 @@ fn main() {
         return;
     }
     let parsed_args = match_args(args);
+
     app(&parsed_args[0], &parsed_args[1]);
     println!(
         "Time taken for installation: {} seconds",

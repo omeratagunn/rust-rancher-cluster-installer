@@ -13,10 +13,10 @@ fn test_k3s_master_concat() {
 fn test_k3s_node_concat() {
     let res = rancherinstaller::utils::build_k3s_node_command(
         &"v1.25.4+k3s1".to_string(),
-        &"182.344.12.12".to_string(),
+        &"182.344.12.12:22".to_string(),
         "VERYGOODTOKEN".to_string(),
     );
-    assert_eq!(res, "curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.25.4+k3s1 K3S_URL=https://182.344.12.12 K3S_TOKEN=VERYGOODTOKEN sh -".to_string());
+    assert_eq!(res, "curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.25.4+k3s1 K3S_URL=https://182.344.12.12:6443 K3S_TOKEN=VERYGOODTOKEN sh -".to_string());
 }
 
 #[test]

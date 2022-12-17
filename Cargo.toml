@@ -6,9 +6,8 @@ include = ["/src"]
 authors = ["omer atagun", "omer atagun<omratagn@gmail.com>"]
 homepage= "https://github.com/omeratagunn/rust-rancher-cluster-installer"
 license= "MIT"
-keywords = "rancher, k3s installer, kubernetes"
+keywords = ["rancher, k3s installer, kubernetes"]
 exclude = ["example", "kubeconfig"]
-publish = false
 
 [profile.dev]
 opt-level = 0

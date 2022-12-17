@@ -2,14 +2,11 @@ pub mod install {
 
     use crate::types::LinuxInstructions;
     use crate::utils;
+    use crate::utils::get_kube_config_path;
     use ssh2::Session;
     use std::fs::{self, File};
     use std::io::prelude::*;
     use std::path::Path;
-
-    pub const fn folder_path() -> &'static str {
-        "./kubeconfig"
-    }
 
     pub fn install_common(instructions: &LinuxInstructions, session: &Session) {
         let mut info_string = String::new();
@@ -72,10 +69,10 @@ pub mod install {
         let mut s = String::new();
 
         command.read_to_string(&mut s).expect("Command to run");
-        let folder: bool = Path::new(&folder_path()).is_dir();
+        let folder: bool = Path::new(&get_kube_config_path("".to_string())).is_dir();
 
         if !folder {
-            fs::create_dir(&folder_path()).expect("creating folder");
+            fs::create_dir(&get_kube_config_path("".to_string())).expect("creating folder");
         }
         let replaced_config = s.replace(
             "https://127.0.0.1:6443",
@@ -139,7 +136,6 @@ pub mod install {
     pub fn install_k3s(session: &Session, command_to_execute: String, rancher_type: &str) {
         let mut info_string = String::new();
         info_string.push_str(&*rancher_type);
-
         let spinner_handle = utils::spinner(info_string.parse().expect("spinner working"));
 
         let mut command = session.channel_session().expect("session");

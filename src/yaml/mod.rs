@@ -6,7 +6,6 @@ use std::process::exit;
 
 pub fn parse_yaml_config(path_to_yaml: &String) -> Config {
     let file_path = Path::new(&path_to_yaml);
-
     if !file_path.is_file() {
         println!("{}", "\nThis is not a file".red().bold());
         exit(1);
