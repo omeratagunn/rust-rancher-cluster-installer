@@ -1,4 +1,3 @@
-use std::fs;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, SpinnerHandle, DOTS};
 
