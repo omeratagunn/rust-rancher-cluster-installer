@@ -1,4 +1,7 @@
 use rancherinstaller;
+use rancherinstaller::types::{Config, ServerConf};
+use std::path::Path;
+use std::{env, path};
 
 #[test]
 fn test_k3s_master_concat() {
