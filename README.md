@@ -33,6 +33,16 @@ nodes:
     password: "something"
 ```
 
+# Example usage
+```
+// will iniate master in given master server, get the token and kubeconfig into the kubeconfig folder where this compiler sits.
+./rancherinstaller -- config <path_to_yaml> -- k3s_version v1.23.13+k3s1
+
+// if you want to delete the installation you can run
+./rancherinstaller -- config <path_to_yaml> -- delete
+
+```
+
 ```
 - If you are clonning the repo, you can ask for help by running `cargo run -- help` 
 - If you somehow got compiled executable, then ./rancherinstaller -- help will do the same.
