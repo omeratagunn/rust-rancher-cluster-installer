@@ -35,7 +35,7 @@ nodes:
 
 # Example usage
 ```
-// will iniate master in given master server, get the token and kubeconfig into the kubeconfig folder where this compiler sits.
+// will iniate master in given master server, get the token and kubeconfig into the kubeconfig folder where this executable sits.
 ./rancherinstaller -- config <path_to_yaml> -- k3s_version v1.23.13+k3s1
 
 // if you want to delete the installation you can run
