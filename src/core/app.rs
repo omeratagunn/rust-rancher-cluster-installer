@@ -1,6 +1,6 @@
 use colored::Colorize;
 use rancherinstaller::builder::{build_masters, build_nodes};
-use rancherinstaller::types::Config;
+use rancherinstaller::types::{Config, ServerConnector, Spinner};
 use rancherinstaller::{ssh, utils};
 
 pub(crate) fn app(path: &String, k3s_version: &String, should_delete: bool) {
@@ -8,6 +8,7 @@ pub(crate) fn app(path: &String, k3s_version: &String, should_delete: bool) {
         rancherinstaller::utils::spinner("Parsing yaml file...".parse().expect("spinner working"));
 
     let parsed_yaml = rancherinstaller::yaml::parse_yaml_config(path);
+
     spinner_handle.done();
 
     if should_delete {
@@ -21,48 +22,35 @@ pub(crate) fn app(path: &String, k3s_version: &String, should_delete: bool) {
 
 fn delete_k3s(servers: &Config) {
     for (_master_node_index, masters) in servers.masters.iter().enumerate() {
-        let spinner_handle = utils::spinner(
-            format!(
-                "{}{}{}{}",
-                "Connecting to master server: ".blue().bold(),
-                masters.ip,
-                " | Name: ",
-                masters.name
-            )
-            .parse()
-            .expect("spinner working"),
-        );
+        masters.spinner_start();
 
-        let ssh_session = ssh::connect_server_via_ssh(&masters);
-        let mut command = ssh_session.channel_session().expect("session");
+        let mut command = masters
+            .connect()
+            .channel_session()
+            .expect("session to work");
+
         command
             .exec("/usr/local/bin/k3s-uninstall.sh")
             .expect(&format!("{} Uninstallation", "k3s master"));
 
         command.wait_close().ok();
 
-        spinner_handle.done();
+        masters.spinner_stop()
     }
 
-    for (_master_node_index, nodes) in servers.nodes.iter().enumerate() {
-        let spinner_handle = utils::spinner(
-            format!(
-                "{}{}{}{}",
-                "Connecting to node server: ".blue().bold(),
-                nodes.ip,
-                " | Name: ",
-                nodes.name
-            )
-            .parse()
-            .expect("spinner working"),
-        );
-        let ssh_session = ssh::connect_server_via_ssh(&nodes);
-        let mut command = ssh_session.channel_session().expect("session");
+    for (_node_index, nodes) in servers.nodes.iter().enumerate() {
+        nodes.spinner_start();
+
+        let mut command = nodes
+            .connect()
+            .channel_session()
+            .expect("session not to fail");
         command
             .exec("/usr/local/bin/k3s-agent-uninstall.sh")
             .expect(&format!("{} Uninstallation", "k3s nodes"));
 
         command.wait_close().ok();
-        spinner_handle.done();
+
+        nodes.spinner_stop();
     }
 }
