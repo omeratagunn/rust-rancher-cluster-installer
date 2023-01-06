@@ -40,14 +40,20 @@ nodes:
 # Example usage
 ```
 // will iniate master in given master server, get the token and kubeconfig into the kubeconfig folder where this executable sits.
-./rancherinstaller -- config <path_to_yaml>
+./rancherinstaller --config <path_to_yaml> --install
+
+# if repo is cloned, then;
+cargo run -- --config <path_to_yaml> --install
 
 // if you want to delete the installation you can run
-./rancherinstaller -- config <path_to_yaml> -- delete
+./rancherinstaller --config <path_to_yaml> --delete
+
+# if repo is cloned, then;
+cargo run -- --config <path_to_yaml> --delete
 
 ```
 
 ```
-- If you are clonning the repo, you can ask for help by running `cargo run -- help` 
-- If you somehow got compiled executable, then ./rancherinstaller -- help will do the same.
+- If you are clonning the repo, you can ask for help by running `cargo run -- --help` 
+- If you somehow got compiled executable, then ./rancherinstaller --help will do the same.
 ```

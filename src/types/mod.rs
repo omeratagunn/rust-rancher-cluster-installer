@@ -1,12 +1,14 @@
-use std::fs;
+use crate::kubernetes::install::{
+    get_k3s_token_and_save, get_kube_config_into_local, install_common, install_k3s,
+};
+use crate::utils::get_kube_config_path;
 use crate::{config, utils};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use ssh2::Session;
+use std::fs;
 use std::net::TcpStream;
 use terminal_spinners::SpinnerHandle;
-use crate::kubernetes::install::{get_k3s_token_and_save, get_kube_config_into_local, install_common, install_k3s};
-use crate::utils::get_kube_config_path;
 
 pub struct Installation {
     pub linux_amd64: Vec<LinuxInstructions>,
@@ -30,7 +32,7 @@ pub struct ServerConf {
     pub ip: String,
     pub username: String,
     pub password: String,
-    pub k3s_version: String
+    pub k3s_version: String,
 }
 
 pub trait ServerConnector {
@@ -74,30 +76,30 @@ impl Spinner for ServerConf {
     }
 }
 
-pub struct ClusterBuilder{
-    pub config: Config
+pub struct ClusterBuilder {
+    pub config: Config,
 }
 
-pub trait ClusterBuild{
-    fn build(&self) -> Result<String,String>;
-    fn delete(&self) -> Result<String,String>;
+pub trait ClusterBuild {
+    fn build(&self) -> Result<String, String>;
+    fn delete(&self) -> Result<String, String>;
 }
 
-impl ClusterBuild for ClusterBuilder{
-    fn build(&self) -> Result<String, String>{
+impl ClusterBuild for ClusterBuilder {
+    fn build(&self) -> Result<String, String> {
         self.build_master();
         self.build_nodes();
         Ok("Build completed".to_string())
     }
-    fn delete(&self) -> Result<String, String>{
+    fn delete(&self) -> Result<String, String> {
         self.delete_master();
         self.delete_nodes();
         Ok("Delete completed".to_string())
     }
 }
 
-impl ClusterBuilder{
-    fn delete_master(&self){
+impl ClusterBuilder {
+    fn delete_master(&self) {
         for (_master_node_index, masters) in self.config.masters.iter().enumerate() {
             masters.spinner_start();
 
@@ -116,7 +118,7 @@ impl ClusterBuilder{
         }
     }
 
-    fn delete_nodes(&self){
+    fn delete_nodes(&self) {
         for (_node_index, nodes) in self.config.nodes.iter().enumerate() {
             nodes.spinner_start();
 
@@ -134,7 +136,7 @@ impl ClusterBuilder{
         }
     }
 
-    fn build_master(&self){
+    fn build_master(&self) {
         for (master_node_index, masters) in self.config.masters.iter().enumerate() {
             masters.spinner_start();
 
@@ -143,7 +145,8 @@ impl ClusterBuilder{
             masters.spinner_stop();
             let ip = &masters.ip;
 
-            for (_index, instructions) in config::get_installation().linux_amd64.iter().enumerate() {
+            for (_index, instructions) in config::get_installation().linux_amd64.iter().enumerate()
+            {
                 install_common(instructions, &ssh_session);
             }
 
@@ -161,7 +164,7 @@ impl ClusterBuilder{
             }
         }
     }
-    fn build_nodes(&self){
+    fn build_nodes(&self) {
         let masterip = &self.config.masters[0].ip;
 
         for (_index, nodes) in self.config.nodes.iter().enumerate() {
