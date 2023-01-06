@@ -1,5 +1,6 @@
 use clap::Parser;
 use rancherinstaller::app::app;
+use rancherinstaller::types::App;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -18,8 +19,12 @@ pub struct Args {
 fn main() {
     let args = Args::parse();
     let start = rancherinstaller::utils::start_time();
-
-    app(&args.config, &args.delete);
+    let app_config = App{
+        config: args.config,
+        install: args.install,
+        delete: args.delete
+    };
+    app(&app_config);
 
     println!(
         "Time taken for installation: {} seconds",

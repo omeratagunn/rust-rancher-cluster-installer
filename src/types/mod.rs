@@ -10,7 +10,13 @@ use std::fs;
 use std::net::TcpStream;
 use terminal_spinners::SpinnerHandle;
 
-pub struct Installation {
+pub struct App{
+    pub config: String,
+    pub install: bool,
+    pub delete: bool
+}
+
+pub struct OsInstallationSequence {
     pub linux_amd64: Vec<LinuxInstructions>,
 }
 
@@ -19,6 +25,7 @@ pub struct LinuxInstructions {
     pub command: String,
     pub fallback_command: String,
 }
+
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {

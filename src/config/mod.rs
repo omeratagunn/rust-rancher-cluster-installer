@@ -1,7 +1,7 @@
-use crate::types::{Installation, LinuxInstructions};
+use crate::types::{OsInstallationSequence, LinuxInstructions};
 
-pub fn get_installation() -> Installation {
-    Installation {
+pub fn get_installation() -> OsInstallationSequence {
+    OsInstallationSequence {
         linux_amd64: Vec::from([
             LinuxInstructions {
                 name: "curl".to_string(),
