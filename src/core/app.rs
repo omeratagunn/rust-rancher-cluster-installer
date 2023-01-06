@@ -1,9 +1,7 @@
-use colored::Colorize;
 use rancherinstaller::builder::{build_masters, build_nodes};
 use rancherinstaller::types::{Config, ServerConnector, Spinner};
-use rancherinstaller::{ssh, utils};
 
-pub(crate) fn app(path: &String, k3s_version: &String, should_delete: bool) {
+pub(crate) fn app(path: &String, k3s_version: &String, should_delete: &bool) {
     let spinner_handle =
         rancherinstaller::utils::spinner("Parsing yaml file...".parse().expect("spinner working"));
 
@@ -11,7 +9,8 @@ pub(crate) fn app(path: &String, k3s_version: &String, should_delete: bool) {
 
     spinner_handle.done();
 
-    if should_delete {
+
+    if *should_delete {
         delete_k3s(&parsed_yaml);
         return;
     }

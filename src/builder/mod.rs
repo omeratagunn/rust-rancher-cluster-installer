@@ -3,8 +3,7 @@ use crate::builder::install::install::{
 };
 use crate::types::{Config, ServerConnector, Spinner};
 use crate::utils::get_kube_config_path;
-use crate::{config, ssh, utils};
-use colored::Colorize;
+use crate::{config, utils};
 use std::fs;
 
 #[path = "../core/installation.rs"]
