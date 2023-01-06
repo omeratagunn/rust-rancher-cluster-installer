@@ -27,7 +27,7 @@ fn main() {
     app(&app_config);
 
     println!(
-        "Time taken for installation: {} seconds",
+        "Time taken for operation: {} seconds",
         rancherinstaller::utils::finish_time(start)
     )
 }
