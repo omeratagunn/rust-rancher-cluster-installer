@@ -1,13 +1,10 @@
-use crate::builder::install::install::{
-    get_k3s_token_and_save, get_kube_config_into_local, install_common, install_k3s,
-};
+
 use crate::types::{Config, ServerConnector, Spinner};
 use crate::utils::get_kube_config_path;
 use crate::{config, utils};
 use std::fs;
+use crate::kubernetes::install::{get_k3s_token_and_save, get_kube_config_into_local, install_common, install_k3s};
 
-#[path = "../core/installation.rs"]
-mod install;
 
 pub fn build_masters(masters: &Config, k3s_version: &String) {
     for (master_node_index, masters) in masters.masters.iter().enumerate() {
