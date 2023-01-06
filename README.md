@@ -18,25 +18,29 @@ masters:
     ip: "127.0.0.1:22"
     username: "root"
     password : "root"
+    k3s_version: "v1.23.13+k3s1"
 nodes:
   - name: "node1"
     ip: "127.0.0.2:22"
     username: "root"
     password : "root"
+    k3s_version: "v1.23.13+k3s1"
   - name: "node2"
     ip: ""
     username: "root"
     password: "something"
+    k3s_version: "v1.23.13+k3s1"
   - name: "node3"
     ip: ""
     username: "root"
     password: "something"
+    k3s_version: "v1.23.13+k3s1"
 ```
 
 # Example usage
 ```
 // will iniate master in given master server, get the token and kubeconfig into the kubeconfig folder where this executable sits.
-./rancherinstaller -- config <path_to_yaml> -- k3s_version v1.23.13+k3s1
+./rancherinstaller -- config <path_to_yaml>
 
 // if you want to delete the installation you can run
 ./rancherinstaller -- config <path_to_yaml> -- delete

@@ -15,10 +15,8 @@ fn main() {
     }
     let parsed_args = match_args(args);
 
-
     app(
         &parsed_args.path,
-        &parsed_args.k3s_version,
         &parsed_args.should_delete,
     );
 
