@@ -1,12 +1,13 @@
 use crate::kubernetes::install::{
-    get_k3s_token_and_save, get_kube_config_into_local, install_common, install_k3s,
+    get_k3s_token_and_save, get_kube_config_into_local, install_k3s,
 };
 use crate::utils::get_kube_config_path;
-use crate::{config, utils};
+use crate::{ utils};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use ssh2::Session;
 use std::fs;
+use std::io::Read;
 use std::net::TcpStream;
 use terminal_spinners::SpinnerHandle;
 
@@ -18,6 +19,57 @@ pub struct App{
 
 pub struct OsInstallationSequence {
     pub linux_amd64: Vec<LinuxInstructions>,
+}
+
+impl OsInstallationSequence{
+    fn run(&self, session: &Session){
+        for (_index, instructions) in self.linux_amd64.iter().enumerate()
+        {
+            let mut info_string = String::new();
+            info_string.push_str("Installing ");
+            info_string.push_str(&*instructions.name);
+
+            let spinner_handle = utils::spinner(info_string.parse().expect("spinner working"));
+
+            let mut command = session.channel_session().expect("session");
+
+            command
+                .exec(&*instructions.command)
+                .expect(&format!("{} INSTALLATION", instructions.name));
+            let mut s = String::new();
+
+            command.read_to_string(&mut s).expect("Command to run");
+
+            // if return length after the command is zero, run fallback command. in this case its a installation scenario //
+            if s.len() == 0 {
+                command.wait_close().ok();
+
+                let mut command = session.channel_session().expect("session");
+                command
+                    .exec(&*instructions.fallback_command)
+                    .expect(&format!("{} trying to install", instructions.name));
+                let mut s = String::new();
+
+                command.read_to_string(&mut s).expect("Command to run");
+
+                command.wait_close().ok();
+                spinner_handle.done();
+                return;
+            }
+
+            if command.exit_status().expect("exit status") > 0 {
+                println!(
+                    "\n Exited with status code: {}",
+                    command.exit_status().unwrap()
+                );
+            }
+
+            command.read_to_string(&mut s).expect("Command to run");
+            command.wait_close().ok();
+            spinner_handle.done();
+        }
+
+    }
 }
 
 pub struct LinuxInstructions {
@@ -85,6 +137,7 @@ impl Spinner for ServerConf {
 
 pub struct ClusterBuilder {
     pub config: Config,
+    pub installation: OsInstallationSequence
 }
 
 pub trait ClusterBuild {
@@ -151,11 +204,8 @@ impl ClusterBuilder {
 
             masters.spinner_stop();
             let ip = &masters.ip;
+            self.installation.run(&ssh_session);
 
-            for (_index, instructions) in config::get_installation().linux_amd64.iter().enumerate()
-            {
-                install_common(instructions, &ssh_session);
-            }
 
             if master_node_index == 0 {
                 install_k3s(
@@ -188,9 +238,7 @@ impl ClusterBuilder {
                     .unwrap(),
                 "k3s worker",
             );
-            for (_i, instructions) in config::get_installation().linux_amd64.iter().enumerate() {
-                install_common(instructions, &ssh_session);
-            }
+            self.installation.run(&ssh_session);
         }
     }
 }
