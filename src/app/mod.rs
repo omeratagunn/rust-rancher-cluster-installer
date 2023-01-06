@@ -1,10 +1,12 @@
-use rancherinstaller::types::{ClusterBuild, ClusterBuilder};
+use crate::types::{ClusterBuild, ClusterBuilder};
+use crate::utils::spinner;
+use crate::yaml::parse_yaml_config;
 
-pub(crate) fn app(path: &String, should_delete: &bool) {
+pub fn app(path: &String, should_delete: &bool) {
     let spinner_handle =
-        rancherinstaller::utils::spinner("Parsing yaml file...".parse().expect("spinner working"));
+        spinner("Parsing yaml file...".parse().expect("spinner working"));
 
-    let parsed_yaml = rancherinstaller::yaml::parse_yaml_config(path);
+    let parsed_yaml = parse_yaml_config(path);
 
     spinner_handle.done();
 

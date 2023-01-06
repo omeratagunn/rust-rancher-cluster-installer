@@ -4,5 +4,5 @@ pub mod ssh;
 pub mod types;
 pub mod utils;
 pub mod yaml;
-pub mod input;
 pub mod kubernetes;
+pub mod app;

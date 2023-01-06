@@ -1,23 +1,24 @@
-#[path = "core/app.rs"]
-mod app;
+use clap::Parser;
+use rancherinstaller::app::app;
 
-use crate::app::app;
-
-use std::env;
-use rancherinstaller::input::{help, match_args};
-
+/// Simple program to greet a person
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Absolute path to yaml file to connect and setup...
+    #[arg(short, long)]
+    servers: String,
+    /// Required with --servers to delete k3s installation
+    #[arg(short, long, default_value_t = false)]
+    delete: bool,
+}
 fn main() {
+    let args = Args::parse();
     let start = rancherinstaller::utils::start_time();
-    let args: Vec<String> = env::args().collect();
-    if args.len() <= 1 {
-        help();
-        return;
-    }
-    let parsed_args = match_args(args);
 
     app(
-        &parsed_args.path,
-        &parsed_args.should_delete,
+        &args.servers,
+        &args.delete,
     );
 
     println!(

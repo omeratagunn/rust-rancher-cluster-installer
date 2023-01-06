@@ -28,3 +28,4 @@ openssl = "0.10"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
 more-asserts= {version = "0.3.1"}
+clap = { version = "4.0.32", features = ["derive"] }
