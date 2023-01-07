@@ -133,6 +133,7 @@ impl Spinner for ServerConf {
 pub struct ClusterBuilder {
     pub config: Config,
     pub installation: OsInstallationSequence,
+    // TODO figure to expect Clusterbuild trait to be implemented for kube_type
     pub kube_type: K3s,
 }
 
@@ -275,16 +276,14 @@ impl KubernetesBuilder for K3s {
     }
     fn build_master_command(&self, version: &String) -> String {
         let mut k3s_flag = String::new();
-        k3s_flag.push_str("curl -sfL https://get.k3s.io |");
-        k3s_flag.push_str(" INSTALL_K3S_VERSION=");
+        k3s_flag.push_str("curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=");
         k3s_flag.push_str(&version);
         k3s_flag.push_str(" sh -s - server --cluster-init");
         return k3s_flag;
     }
     fn build_node_command(&self, version: &String, ip: &String, mut token: String) -> String {
         let mut k3s_flag = String::new();
-        k3s_flag.push_str("curl -sfL https://get.k3s.io |");
-        k3s_flag.push_str(" INSTALL_K3S_VERSION=");
+        k3s_flag.push_str("curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=");
         k3s_flag.push_str(&version);
         k3s_flag.push_str(" K3S_URL=https://");
         k3s_flag.push_str(&ip.replace(":22", ":6443"));

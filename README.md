@@ -1,5 +1,3 @@
-# !Under-development!
-
 # Purpose
 
 Creating your own k3s clusters requires sets of installations in order to get things running. Even though rancher simplified it a lot, for some purpose you may find this tiny application comforting( in a manner of instruction package)
