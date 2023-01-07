@@ -1,57 +1,10 @@
 pub mod install {
-
-    use crate::types::LinuxInstructions;
     use crate::utils;
     use crate::utils::get_kube_config_path;
     use ssh2::Session;
     use std::fs::{self, File};
     use std::io::prelude::*;
     use std::path::Path;
-
-    pub fn install_common(instructions: &LinuxInstructions, session: &Session) {
-        let mut info_string = String::new();
-        info_string.push_str("Installing ");
-        info_string.push_str(&*instructions.name);
-
-        let spinner_handle = utils::spinner(info_string.parse().expect("spinner working"));
-
-        let mut command = session.channel_session().expect("session");
-
-        command
-            .exec(&*instructions.command)
-            .expect(&format!("{} INSTALLATION", instructions.name));
-        let mut s = String::new();
-
-        command.read_to_string(&mut s).expect("Command to run");
-
-        // if return length after the command is zero, run fallback command. in this case its a installation scenario //
-        if s.len() == 0 {
-            command.wait_close().ok();
-
-            let mut command = session.channel_session().expect("session");
-            command
-                .exec(&*instructions.fallback_command)
-                .expect(&format!("{} trying to install", instructions.name));
-            let mut s = String::new();
-
-            command.read_to_string(&mut s).expect("Command to run");
-
-            command.wait_close().ok();
-            spinner_handle.done();
-            return;
-        }
-
-        if command.exit_status().expect("exit status") > 0 {
-            println!(
-                "\n Exited with status code: {}",
-                command.exit_status().unwrap()
-            );
-        }
-
-        command.read_to_string(&mut s).expect("Command to run");
-        command.wait_close().ok();
-        spinner_handle.done();
-    }
 
     pub fn get_kube_config_into_local(ip: &String, session: &Session) {
         let spinner_handle = utils::spinner(
@@ -130,32 +83,6 @@ pub mod install {
             _ => (),
         }
 
-        spinner_handle.done();
-    }
-
-    pub fn install_k3s(session: &Session, command_to_execute: String, rancher_type: &str) {
-        let mut info_string = String::new();
-        info_string.push_str(&*rancher_type);
-        let spinner_handle = utils::spinner(info_string.parse().expect("spinner working"));
-
-        let mut command = session.channel_session().expect("session");
-
-        command
-            .exec(&*command_to_execute)
-            .expect(&format!("{} INSTALLATION", rancher_type));
-        let mut s = String::new();
-
-        command.read_to_string(&mut s).expect("Command to run");
-
-        if command.exit_status().expect("exit status") > 0 {
-            println!(
-                "\n Exited with status code: {}",
-                command.exit_status().unwrap()
-            );
-        }
-
-        command.read_to_string(&mut s).expect("Command to run");
-        command.wait_close().ok();
         spinner_handle.done();
     }
 }

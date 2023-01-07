@@ -1,8 +1,6 @@
-use crate::kubernetes::install::{
-    get_k3s_token_and_save, get_kube_config_into_local, install_k3s,
-};
-use crate::utils::get_kube_config_path;
-use crate::{ utils};
+use crate::kubernetes::install::{get_k3s_token_and_save, get_kube_config_into_local};
+use crate::utils;
+use crate::utils::{get_kube_config_path, strip_trailing_nl};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use ssh2::Session;
@@ -11,20 +9,19 @@ use std::io::Read;
 use std::net::TcpStream;
 use terminal_spinners::SpinnerHandle;
 
-pub struct App{
+pub struct App {
     pub config: String,
     pub install: bool,
-    pub delete: bool
+    pub delete: bool,
 }
 
 pub struct OsInstallationSequence {
     pub linux_amd64: Vec<LinuxInstructions>,
 }
 
-impl OsInstallationSequence{
-    fn run(&self, session: &Session){
-        for (_index, instructions) in self.linux_amd64.iter().enumerate()
-        {
+impl OsInstallationSequence {
+    fn run(&self, session: &Session) {
+        for (_index, instructions) in self.linux_amd64.iter().enumerate() {
             let mut info_string = String::new();
             info_string.push_str("Installing ");
             info_string.push_str(&*instructions.name);
@@ -68,7 +65,6 @@ impl OsInstallationSequence{
             command.wait_close().ok();
             spinner_handle.done();
         }
-
     }
 }
 
@@ -77,7 +73,6 @@ pub struct LinuxInstructions {
     pub command: String,
     pub fallback_command: String,
 }
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -137,7 +132,8 @@ impl Spinner for ServerConf {
 
 pub struct ClusterBuilder {
     pub config: Config,
-    pub installation: OsInstallationSequence
+    pub installation: OsInstallationSequence,
+    pub kube_type: K3s,
 }
 
 pub trait ClusterBuild {
@@ -206,14 +202,14 @@ impl ClusterBuilder {
             let ip = &masters.ip;
             self.installation.run(&ssh_session);
 
-
             if master_node_index == 0 {
-                install_k3s(
+                self.kube_type.install(
                     &ssh_session,
-                    utils::build_k3s_master_command(&masters.k3s_version)
+                    &String::from("k3s master"),
+                    self.kube_type
+                        .build_master_command(&masters.k3s_version)
                         .parse()
                         .unwrap(),
-                    "k3s master",
                 );
 
                 get_kube_config_into_local(ip, &ssh_session);
@@ -231,14 +227,72 @@ impl ClusterBuilder {
 
             let token = fs::read_to_string(get_kube_config_path("/token".to_string()))
                 .expect("should have been read the file");
-            install_k3s(
+            self.kube_type.install(
                 &ssh_session,
-                utils::build_k3s_node_command(&nodes.k3s_version, &masterip, token)
-                    .parse()
-                    .unwrap(),
-                "k3s worker",
+                &String::from("k3s worker"),
+                self.kube_type
+                    .build_node_command(&nodes.k3s_version, &masterip, token),
             );
+
             self.installation.run(&ssh_session);
         }
+    }
+}
+
+pub struct K3s {}
+
+pub trait KubernetesBuilder {
+    fn install(&self, session: &Session, cluster_type: &String, command_to_execute: String);
+    fn build_master_command(&self, version: &String) -> String;
+    fn build_node_command(&self, version: &String, ip: &String, token: String) -> String;
+}
+
+impl KubernetesBuilder for K3s {
+    fn install(&self, session: &Session, cluster_type: &String, command_to_execute: String) {
+        let mut info_string = String::new();
+        info_string.push_str(&cluster_type);
+        let spinner_handle = utils::spinner(info_string.parse().expect("spinner working"));
+
+        let mut command = session.channel_session().expect("session");
+
+        command
+            .exec(&*command_to_execute)
+            .expect(&format!("{} INSTALLATION", cluster_type));
+        let mut s = String::new();
+
+        command.read_to_string(&mut s).expect("Command to run");
+
+        if command.exit_status().expect("exit status") > 0 {
+            println!(
+                "\n Exited with status code: {}",
+                command.exit_status().unwrap()
+            );
+        }
+
+        command.read_to_string(&mut s).expect("Command to run");
+        command.wait_close().ok();
+        spinner_handle.done();
+    }
+    fn build_master_command(&self, version: &String) -> String {
+        let mut k3s_flag = String::new();
+        k3s_flag.push_str("curl -sfL https://get.k3s.io |");
+        k3s_flag.push_str(" INSTALL_K3S_VERSION=");
+        k3s_flag.push_str(&version);
+        k3s_flag.push_str(" sh -s - server --cluster-init");
+        return k3s_flag;
+    }
+    fn build_node_command(&self, version: &String, ip: &String, mut token: String) -> String {
+        let mut k3s_flag = String::new();
+        k3s_flag.push_str("curl -sfL https://get.k3s.io |");
+        k3s_flag.push_str(" INSTALL_K3S_VERSION=");
+        k3s_flag.push_str(&version);
+        k3s_flag.push_str(" K3S_URL=https://");
+        k3s_flag.push_str(&ip.replace(":22", ":6443"));
+        k3s_flag.push_str(" K3S_TOKEN=");
+
+        strip_trailing_nl(&mut token);
+        k3s_flag.push_str(&token);
+        k3s_flag.push_str(" sh -");
+        return k3s_flag;
     }
 }

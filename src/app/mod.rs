@@ -1,10 +1,11 @@
-use crate::types::{App, ClusterBuild, ClusterBuilder, LinuxInstructions, OsInstallationSequence};
+use crate::types::{
+    App, ClusterBuild, ClusterBuilder, K3s, LinuxInstructions, OsInstallationSequence,
+};
 use crate::yaml::parse_yaml_config;
 
-pub fn app(config: &App) {
-
+pub fn app(env_input: &App) {
     let build = ClusterBuilder {
-        config: parse_yaml_config(&config.config),
+        config: parse_yaml_config(&env_input.config),
         installation: OsInstallationSequence {
             linux_amd64: Vec::from([
                 LinuxInstructions {
@@ -32,10 +33,11 @@ pub fn app(config: &App) {
                     command: "curl -sSfL https://raw.githubusercontent.com/longhorn/longhorn/master/scripts/environment_check.sh | bash".to_string(),
                     fallback_command: "curl -sSfL https://raw.githubusercontent.com/longhorn/longhorn/master/scripts/environment_check.sh | bash".to_string(),
                 }])
-        }
+        },
+        kube_type: K3s{}
     };
 
-    if config.delete {
+    if env_input.delete {
         let delete = build.delete();
         match delete {
             Ok(msg) => println!("{:?}", &msg),
@@ -43,7 +45,7 @@ pub fn app(config: &App) {
         }
         return;
     }
-    if config.install {
+    if env_input.install {
         let install = build.build();
 
         match install {
@@ -51,5 +53,4 @@ pub fn app(config: &App) {
             Err(err) => println!("{:?}", &err),
         }
     }
-
 }

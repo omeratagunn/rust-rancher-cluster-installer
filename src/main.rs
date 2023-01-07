@@ -19,10 +19,10 @@ pub struct Args {
 fn main() {
     let args = Args::parse();
     let start = rancherinstaller::utils::start_time();
-    let app_config = App{
+    let app_config = App {
         config: args.config,
         install: args.install,
-        delete: args.delete
+        delete: args.delete,
     };
     app(&app_config);
 
