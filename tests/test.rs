@@ -1,4 +1,4 @@
-use rancherinstaller;
+
 use rancherinstaller::types::{K3s, KubernetesBuilder};
 
 #[test]

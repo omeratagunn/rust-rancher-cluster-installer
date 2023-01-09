@@ -14,10 +14,10 @@ pub fn parse_yaml_config(path_to_yaml: &String) -> Config {
         exit(1);
     }
 
-    let file = File::open(&path_to_yaml).expect("file could not be opened");
+    let file = File::open(path_to_yaml).expect("file could not be opened");
 
     let deserialized_map: Config = serde_yaml::from_reader(file).expect("reader");
     spinner_handle.done();
 
-    return deserialized_map;
+    deserialized_map
 }

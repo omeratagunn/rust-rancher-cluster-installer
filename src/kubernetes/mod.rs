@@ -6,7 +6,7 @@ pub mod install {
     use std::io::prelude::*;
     use std::path::Path;
 
-    pub fn get_kube_config_into_local(ip: &String, session: &Session) {
+    pub fn get_kube_config_into_local(ip: &str, session: &Session) {
         let spinner_handle = utils::spinner(
             "Fetching kube config into local..."
                 .parse()
@@ -25,25 +25,22 @@ pub mod install {
         let folder: bool = Path::new(&get_kube_config_path("".to_string())).is_dir();
 
         if !folder {
-            fs::create_dir(&get_kube_config_path("".to_string())).expect("creating folder");
+            fs::create_dir(get_kube_config_path("".to_string())).expect("creating folder");
         }
         let replaced_config = s.replace(
             "https://127.0.0.1:6443",
-            &*format!("{}{}", "https://", ip.replace("22", "6443")),
+            &format!("{}{}", "https://", ip.replace("22", "6443")),
         );
 
         let path = Path::new("./kubeconfig/config");
         let display = path.display();
 
-        let mut file = match File::create(&path) {
+        let mut file = match File::create(path) {
             Err(why) => panic!("couldn't create {}: {}", display, why),
             Ok(file) => file,
         };
 
-        match file.write_all(replaced_config.as_bytes()) {
-            Err(why) => panic!("couldn't write to {}: {}", display, why),
-            _ => (),
-        }
+        if let Err(why) = file.write_all(replaced_config.as_bytes()) { panic!("couldn't write to {}: {}", display, why) }
 
         spinner_handle.done();
     }
@@ -73,15 +70,12 @@ pub mod install {
         let path = Path::new("./kubeconfig/token");
         let display = path.display();
 
-        let mut file = match File::create(&path) {
+        let mut file = match File::create(path) {
             Err(why) => panic!("couldn't create {}: {}", display, why),
             Ok(file) => file,
         };
 
-        match file.write_all(s.as_bytes()) {
-            Err(why) => panic!("couldn't write to {}: {}", display, why),
-            _ => (),
-        }
+        if let Err(why) = file.write_all(s.as_bytes()) { panic!("couldn't write to {}: {}", display, why) }
 
         spinner_handle.done();
     }

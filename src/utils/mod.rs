@@ -22,15 +22,15 @@ pub fn strip_trailing_nl(input: &mut String) {
 }
 
 pub fn spinner(text: String) -> SpinnerHandle {
-    let handle = SpinnerBuilder::new().spinner(&DOTS).text(text).start();
-    return handle;
+    
+    SpinnerBuilder::new().spinner(&DOTS).text(text).start()
 }
 
 pub fn get_kube_config_path(join: String) -> String {
     let mut kubeconfig_path = String::from("kubeconfig");
     kubeconfig_path.push_str(&join);
     let path = Path::join(
-        &env::current_dir().unwrap().as_path(),
+        env::current_dir().unwrap().as_path(),
         Path::new(&kubeconfig_path).to_str().unwrap(),
     )
     .as_os_str()
@@ -38,5 +38,5 @@ pub fn get_kube_config_path(join: String) -> String {
     .into_string()
     .expect("well, do not expect much shit goes bananas after all");
 
-    return path;
+    path
 }

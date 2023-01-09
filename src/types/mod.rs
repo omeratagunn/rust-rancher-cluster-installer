@@ -24,27 +24,27 @@ impl OsInstallationSequence {
         for (_index, instructions) in self.linux_amd64.iter().enumerate() {
             let mut info_string = String::new();
             info_string.push_str("Installing ");
-            info_string.push_str(&*instructions.name);
+            info_string.push_str(&instructions.name);
 
             let spinner_handle = utils::spinner(info_string.parse().expect("spinner working"));
 
             let mut command = session.channel_session().expect("session");
 
             command
-                .exec(&*instructions.command)
-                .expect(&format!("{} INSTALLATION", instructions.name));
+                .exec(&instructions.command)
+                .unwrap_or_else(|_| panic!("{} INSTALLATION", instructions.name));
             let mut s = String::new();
 
             command.read_to_string(&mut s).expect("Command to run");
 
             // if return length after the command is zero, run fallback command. in this case its a installation scenario //
-            if s.len() == 0 {
+            if s.is_empty() {
                 command.wait_close().ok();
 
                 let mut command = session.channel_session().expect("session");
                 command
-                    .exec(&*instructions.fallback_command)
-                    .expect(&format!("{} trying to install", instructions.name));
+                    .exec(&instructions.fallback_command)
+                    .unwrap_or_else(|_| panic!("{} trying to install", instructions.name));
                 let mut s = String::new();
 
                 command.read_to_string(&mut s).expect("Command to run");
@@ -102,7 +102,7 @@ impl ServerConnector for ServerConf {
         sess.userauth_password(&self.username, &self.password)
             .expect("userauthgone");
 
-        return sess;
+        sess
     }
 }
 
@@ -167,7 +167,7 @@ impl ClusterBuilder {
 
             command
                 .exec("/usr/local/bin/k3s-uninstall.sh")
-                .expect(&format!("{} Uninstallation", "k3s master"));
+                .unwrap_or_else(|_| panic!("{} Uninstallation", "k3s master"));
 
             command.wait_close().ok();
 
@@ -185,7 +185,7 @@ impl ClusterBuilder {
                 .expect("session not to fail");
             command
                 .exec("/usr/local/bin/k3s-agent-uninstall.sh")
-                .expect(&format!("{} Uninstallation", "k3s nodes"));
+                .unwrap_or_else(|_| panic!("{} Uninstallation", "k3s nodes"));
 
             command.wait_close().ok();
 
@@ -232,7 +232,7 @@ impl ClusterBuilder {
                 &ssh_session,
                 &String::from("k3s worker"),
                 self.kube_type
-                    .build_node_command(&nodes.k3s_version, &masterip, token),
+                    .build_node_command(&nodes.k3s_version, masterip, token),
             );
 
             self.installation.run(&ssh_session);
@@ -243,22 +243,22 @@ impl ClusterBuilder {
 pub struct K3s {}
 
 pub trait KubernetesBuilder {
-    fn install(&self, session: &Session, cluster_type: &String, command_to_execute: String);
-    fn build_master_command(&self, version: &String) -> String;
-    fn build_node_command(&self, version: &String, ip: &String, token: String) -> String;
+    fn install(&self, session: &Session, cluster_type: &str, command_to_execute: String);
+    fn build_master_command(&self, version: &str) -> String;
+    fn build_node_command(&self, version: &str, ip: &str, token: String) -> String;
 }
 
 impl KubernetesBuilder for K3s {
-    fn install(&self, session: &Session, cluster_type: &String, command_to_execute: String) {
+    fn install(&self, session: &Session, cluster_type: &str, command_to_execute: String) {
         let mut info_string = String::new();
-        info_string.push_str(&cluster_type);
+        info_string.push_str(cluster_type);
         let spinner_handle = utils::spinner(info_string.parse().expect("spinner working"));
 
         let mut command = session.channel_session().expect("session");
 
         command
-            .exec(&*command_to_execute)
-            .expect(&format!("{} INSTALLATION", cluster_type));
+            .exec(&command_to_execute)
+            .unwrap_or_else(|_| panic!("{} INSTALLATION", cluster_type));
         let mut s = String::new();
 
         command.read_to_string(&mut s).expect("Command to run");
@@ -274,17 +274,17 @@ impl KubernetesBuilder for K3s {
         command.wait_close().ok();
         spinner_handle.done();
     }
-    fn build_master_command(&self, version: &String) -> String {
+    fn build_master_command(&self, version: &str) -> String {
         let mut k3s_flag = String::new();
         k3s_flag.push_str("curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=");
-        k3s_flag.push_str(&version);
+        k3s_flag.push_str(version);
         k3s_flag.push_str(" sh -s - server --cluster-init");
-        return k3s_flag;
+        k3s_flag
     }
-    fn build_node_command(&self, version: &String, ip: &String, mut token: String) -> String {
+    fn build_node_command(&self, version: &str, ip: &str, mut token: String) -> String {
         let mut k3s_flag = String::new();
         k3s_flag.push_str("curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=");
-        k3s_flag.push_str(&version);
+        k3s_flag.push_str(version);
         k3s_flag.push_str(" K3S_URL=https://");
         k3s_flag.push_str(&ip.replace(":22", ":6443"));
         k3s_flag.push_str(" K3S_TOKEN=");
@@ -292,6 +292,6 @@ impl KubernetesBuilder for K3s {
         strip_trailing_nl(&mut token);
         k3s_flag.push_str(&token);
         k3s_flag.push_str(" sh -");
-        return k3s_flag;
+        k3s_flag
     }
 }
